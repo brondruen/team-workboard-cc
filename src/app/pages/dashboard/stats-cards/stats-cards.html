@@ -1,0 +1,16 @@
+<div class="stats-grid">
+  @for (card of cards; track card.label) {
+    <div class="stat-card card">
+      <div class="stat-icon" [style.background]="card.iconBg">
+        <span class="material-icons-outlined">{{ card.icon }}</span>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ card.label }}</span>
+        <span class="stat-value">{{ card.value }}</span>
+        <span class="stat-change" [class.up]="card.trend === 'up'" [class.down]="card.trend === 'down'">
+          {{ card.trend === 'up' ? '&#8593;' : '&#8595;' }} {{ card.change }}% vs last month
+        </span>
+      </div>
+    </div>
+  }
+</div>

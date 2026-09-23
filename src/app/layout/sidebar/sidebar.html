@@ -1,0 +1,42 @@
+<aside class="sidebar" [ngClass]="{ collapsed: isCollapsed() }">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <span class="material-icons-outlined logo-icon">play_arrow</span>
+    @if (!isCollapsed()) {
+      <span class="logo-text">Workboard</span>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    @for (group of groups; track group) {
+      <div class="nav-group">
+        @if (!isCollapsed()) {
+          <span class="nav-group-label">{{ group }}</span>
+        }
+        @for (item of getItemsByGroup(group); track item.route) {
+          <a
+            class="nav-item"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [title]="item.label"
+          >
+            <span class="material-icons-outlined nav-icon">{{ item.icon }}</span>
+            @if (!isCollapsed()) {
+              <span class="nav-label">{{ item.label }}</span>
+            }
+          </a>
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- Collapse Toggle -->
+  <div class="sidebar-footer">
+    <button class="collapse-toggle" (click)="toggleCollapse()">
+      <span class="material-icons-outlined">
+        {{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}
+      </span>
+    </button>
+  </div>
+</aside>

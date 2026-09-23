@@ -1,0 +1,65 @@
+<div class="card recent-projects-card">
+  <div class="card-header">
+    <h3>Recent Projects</h3>
+    <a href="#" class="view-all">View All</a>
+  </div>
+
+  <table class="projects-table">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Workspace</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Due Date</th>
+        <th>Members</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (project of projects; track project.name) {
+        <tr>
+          <td>
+            <div class="project-name">
+              <div class="project-icon" [style.background]="project.iconBg">
+                <span class="material-icons-outlined">{{ project.icon }}</span>
+              </div>
+              <span>{{ project.name }}</span>
+            </div>
+          </td>
+          <td class="text-secondary">{{ project.workspace }}</td>
+          <td>
+            <span class="badge" [class]="project.statusClass">{{ project.status }}</span>
+          </td>
+          <td>
+            <div class="progress-cell">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="project.progress"></div>
+              </div>
+              <span class="progress-text">{{ project.progress }}%</span>
+            </div>
+          </td>
+          <td class="text-secondary">{{ project.dueDate }}</td>
+          <td>
+            <div class="members-cell">
+              <div class="member-avatars">
+                <div class="member-avatar">
+                  <span class="material-icons-outlined">person</span>
+                </div>
+                <div class="member-avatar">
+                  <span class="material-icons-outlined">person</span>
+                </div>
+              </div>
+              <span class="member-extra">+{{ project.memberCount - 2 }}</span>
+            </div>
+          </td>
+          <td>
+            <button class="more-btn">
+              <span class="material-icons-outlined">more_vert</span>
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

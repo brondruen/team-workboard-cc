@@ -1,0 +1,24 @@
+<div class="card deadlines-card">
+  <div class="card-header">
+    <h3>Upcoming Deadlines</h3>
+    <a href="#" class="view-all">View Calendar</a>
+  </div>
+
+  <div class="deadlines-list">
+    @for (deadline of deadlines; track deadline.project + deadline.day) {
+      <div class="deadline-item">
+        <div class="deadline-date">
+          <span class="deadline-month">{{ deadline.month }}</span>
+          <span class="deadline-day">{{ deadline.day }}</span>
+        </div>
+        <div class="deadline-info">
+          <span class="deadline-project">{{ deadline.project }}</span>
+          <div class="deadline-meta">
+            <span class="deadline-task">{{ deadline.task }}</span>
+            <span class="badge" [class]="deadline.priorityClass">{{ deadline.priority }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

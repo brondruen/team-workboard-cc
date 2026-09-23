@@ -1,0 +1,66 @@
+<header class="topbar">
+  <!-- Left section -->
+  <div class="topbar__left">
+    <button class="topbar__menu-btn" (click)="toggleSidebar()">
+      <span class="material-icons-outlined">menu</span>
+    </button>
+    <h1 class="topbar__title">Dashboard</h1>
+  </div>
+
+  <!-- Center section -->
+  <div class="topbar__center">
+    <div class="topbar__search">
+      <span class="material-icons-outlined topbar__search-icon">search</span>
+      <input
+        type="text"
+        class="topbar__search-input"
+        placeholder="Search (Ctrl + K)"
+      />
+    </div>
+  </div>
+
+  <!-- Right section -->
+  <div class="topbar__right">
+    <button class="topbar__notification-btn">
+      <span class="material-icons-outlined">notifications</span>
+      <span class="topbar__badge">{{ notificationCount }}</span>
+    </button>
+
+    <div class="topbar__user-wrapper">
+      <div class="topbar__user" (click)="toggleUserMenu()">
+        <div class="topbar__avatar">{{ user?.initials }}</div>
+        <div class="topbar__user-info">
+          <span class="topbar__user-name">{{ user?.name }}</span>
+          <span class="topbar__user-role">{{ user?.role }}</span>
+        </div>
+        <span class="material-icons-outlined topbar__chevron">expand_more</span>
+      </div>
+
+      @if (showUserMenu()) {
+        <div class="topbar__dropdown">
+          <div class="dropdown__header">
+            <div class="topbar__avatar dropdown__avatar">{{ user?.initials }}</div>
+            <div>
+              <div class="dropdown__name">{{ user?.name }}</div>
+              <div class="dropdown__email">{{ user?.email }}</div>
+            </div>
+          </div>
+          <div class="dropdown__divider"></div>
+          <button class="dropdown__item" (click)="$event.stopPropagation()">
+            <span class="material-icons-outlined">person</span>
+            My Profile
+          </button>
+          <button class="dropdown__item" (click)="$event.stopPropagation()">
+            <span class="material-icons-outlined">settings</span>
+            Account Settings
+          </button>
+          <div class="dropdown__divider"></div>
+          <button class="dropdown__item dropdown__item--danger" (click)="logout()">
+            <span class="material-icons-outlined">logout</span>
+            Sign out
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

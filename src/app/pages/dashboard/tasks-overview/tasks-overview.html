@@ -1,0 +1,23 @@
+<div class="card tasks-card">
+  <div class="card-header">
+    <h3>Tasks Overview</h3>
+    <a href="#" class="view-all">View All</a>
+  </div>
+
+  <div class="tasks-list">
+    @for (status of statuses; track status.label) {
+      <div class="task-row">
+        <span class="task-label">{{ status.label }}</span>
+        <div class="task-bar-container">
+          <div class="task-bar" [style.width.%]="status.percentage" [style.background]="status.color"></div>
+        </div>
+        <span class="task-count">{{ status.count }} ({{ status.percentage }}%)</span>
+      </div>
+    }
+  </div>
+
+  <div class="tasks-total">
+    <span>Total Tasks</span>
+    <span class="total-value">{{ totalTasks }}</span>
+  </div>
+</div>

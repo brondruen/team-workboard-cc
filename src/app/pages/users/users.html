@@ -1,0 +1,344 @@
+<div class="page-container">
+  <!-- ─── Header ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1>Users</h1>
+      <p>System user management — 50 mock users with RxJS operator demonstrations</p>
+    </div>
+    <button class="btn-primary" (click)="onRefreshClick()">
+      <span class="material-icons-outlined" [class.spin]="exhaustMapRefreshing">refresh</span>
+      Refresh List
+    </button>
+  </div>
+
+  <!-- ─── Stats Row ───────────────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons-outlined stat-icon total">groups</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ users.length }}</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons-outlined stat-icon active">check_circle</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ activeCount }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons-outlined stat-icon inactive">cancel</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ inactiveCount }}</span>
+        <span class="stat-label">Inactive</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons-outlined stat-icon pending">schedule</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ pendingCount }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RxJS Operator Showcase ──────────────────────────────────────── -->
+  <div class="card operator-showcase">
+    <div class="showcase-header">
+      <h2>
+        <span class="material-icons-outlined">code</span>
+        RxJS Higher-Order Mapping Operators
+      </h2>
+      <p>Interactive demonstrations showing how switchMap, mergeMap, concatMap, and exhaustMap behave differently</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="operator-tabs">
+      <button class="tab" [class.active]="activeTab === 'switchMap'" (click)="activeTab = 'switchMap'">
+        <span class="material-icons-outlined">swap_horiz</span>
+        switchMap
+      </button>
+      <button class="tab" [class.active]="activeTab === 'mergeMap'" (click)="activeTab = 'mergeMap'">
+        <span class="material-icons-outlined">call_split</span>
+        mergeMap
+      </button>
+      <button class="tab" [class.active]="activeTab === 'concatMap'" (click)="activeTab = 'concatMap'">
+        <span class="material-icons-outlined">sort</span>
+        concatMap
+      </button>
+      <button class="tab" [class.active]="activeTab === 'exhaustMap'" (click)="activeTab = 'exhaustMap'">
+        <span class="material-icons-outlined">block</span>
+        exhaustMap
+      </button>
+    </div>
+
+    <!-- ═══ switchMap Panel ═══════════════════════════════════════════ -->
+    @if (activeTab === 'switchMap') {
+      <div class="operator-panel">
+        <div class="operator-info">
+          <div class="operator-badge switchmap">switchMap</div>
+          <h3>Cancels Previous, Keeps Latest</h3>
+          <p class="operator-desc">
+            <strong>Use case: Typeahead search.</strong> When the user types a new character,
+            <code>switchMap</code> <em>unsubscribes</em> from the previous search request and subscribes to a new one.
+            Only the result from the most recent keystroke is kept — stale results from earlier keystrokes are automatically cancelled.
+          </p>
+          <div class="operator-diagram">
+            <pre>source$:    ──a──ab──abc──────────────────&gt;
+                 │    │
+switchMap:  (cancels previous, subscribes to new)
+                 │    └─ search("abc") ──results──&gt;
+                 └─ search("ab") ✗ CANCELLED</pre>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <div class="demo-control">
+            <span class="material-icons-outlined">search</span>
+            <input
+              type="text"
+              placeholder="Type to search users (try typing fast)..."
+              [ngModel]="searchTerm"
+              (ngModelChange)="onSearch($event)"
+            />
+            @if (switchMapSearching) {
+              <span class="material-icons-outlined spin">progress_activity</span>
+            }
+          </div>
+          <div class="demo-hint">
+            <span class="material-icons-outlined">lightbulb</span>
+            Try typing quickly — watch previous requests get cancelled in the log below
+          </div>
+          <div class="log-container" #switchMapLogContainer>
+            @for (log of switchMapLogs; track $index) {
+              <div class="log-entry" [class]="'log-' + log.type">
+                <span class="log-time">{{ log.time }}</span>
+                <span class="log-message">{{ log.message }}</span>
+              </div>
+            }
+            @if (switchMapLogs.length === 0) {
+              <div class="log-empty">Start typing above to see switchMap in action...</div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══ mergeMap Panel ════════════════════════════════════════════ -->
+    @if (activeTab === 'mergeMap') {
+      <div class="operator-panel">
+        <div class="operator-info">
+          <div class="operator-badge mergemap">mergeMap</div>
+          <h3>Runs All in Parallel</h3>
+          <p class="operator-desc">
+            <strong>Use case: Bulk detail loading.</strong>
+            <code>mergeMap</code> subscribes to all inner Observables <em>simultaneously</em>.
+            It does not wait for one to finish before starting the next. Results arrive in whatever order the server
+            responds — not the order they were requested.
+          </p>
+          <div class="operator-diagram">
+            <pre>source$:    ──[id:1, id:2, id:3]────────────────────&gt;
+                 │     │     │
+mergeMap:     fetch(1) fetch(2) fetch(3)  ← all PARALLEL
+                 │        │  │
+             res(1)    res(3) res(2)      ← arrival order varies</pre>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <button class="btn-demo" (click)="runMergeMapDemo()" [disabled]="mergeMapLoading">
+            <span class="material-icons-outlined">{{ mergeMapLoading ? 'progress_activity' : 'play_arrow' }}</span>
+            {{ mergeMapLoading ? 'Loading 5 users in parallel...' : 'Load 5 Random User Details (Parallel)' }}
+          </button>
+          <div class="demo-hint">
+            <span class="material-icons-outlined">lightbulb</span>
+            Watch how responses arrive in random order — not the order they were requested
+          </div>
+          <div class="log-container" #mergeMapLogContainer>
+            @for (log of mergeMapLogs; track $index) {
+              <div class="log-entry" [class]="'log-' + log.type">
+                <span class="log-time">{{ log.time }}</span>
+                <span class="log-message">{{ log.message }}</span>
+              </div>
+            }
+            @if (mergeMapLogs.length === 0) {
+              <div class="log-empty">Click the button above to see mergeMap in action...</div>
+            }
+          </div>
+
+          @if (loadedDetails.length > 0) {
+            <div class="detail-cards">
+              @for (detail of loadedDetails; track detail.id) {
+                <div class="detail-card">
+                  <div class="detail-avatar">{{ detail.avatar }}</div>
+                  <div class="detail-info">
+                    <strong>{{ detail.name }}</strong>
+                    <span>{{ detail.bio }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ═══ concatMap Panel ═══════════════════════════════════════════ -->
+    @if (activeTab === 'concatMap') {
+      <div class="operator-panel">
+        <div class="operator-info">
+          <div class="operator-badge concatmap">concatMap</div>
+          <h3>Processes One at a Time, in Order</h3>
+          <p class="operator-desc">
+            <strong>Use case: Sequential save operations.</strong>
+            <code>concatMap</code> queues emissions and subscribes to the next inner Observable only after the
+            current one completes. This guarantees ordering — User #1 is fully saved before User #2 begins.
+          </p>
+          <div class="operator-diagram">
+            <pre>source$:     ──id:1──id:2──id:3──────────────────────&gt;
+                  │
+concatMap:   save(1)─────done → save(2)─────done → save(3)─────done
+                       waits ↑       waits ↑</pre>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <button class="btn-demo" (click)="runConcatMapDemo()" [disabled]="concatMapSaving">
+            <span class="material-icons-outlined">{{ concatMapSaving ? 'progress_activity' : 'play_arrow' }}</span>
+            {{ concatMapSaving ? 'Saving sequentially...' : 'Save 5 Users Sequentially' }}
+          </button>
+
+          @if (concatMapSaving) {
+            <div class="progress-bar-container">
+              <div class="progress-bar" [style.width.%]="(concatMapProgress / concatMapTotal) * 100"></div>
+            </div>
+            <div class="progress-label">{{ concatMapProgress }} / {{ concatMapTotal }} completed</div>
+          }
+
+          <div class="demo-hint">
+            <span class="material-icons-outlined">lightbulb</span>
+            Notice how each save completes before the next one starts — guaranteed sequential order
+          </div>
+          <div class="log-container" #concatMapLogContainer>
+            @for (log of concatMapLogs; track $index) {
+              <div class="log-entry" [class]="'log-' + log.type">
+                <span class="log-time">{{ log.time }}</span>
+                <span class="log-message">{{ log.message }}</span>
+              </div>
+            }
+            @if (concatMapLogs.length === 0) {
+              <div class="log-empty">Click the button above to see concatMap in action...</div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══ exhaustMap Panel ══════════════════════════════════════════ -->
+    @if (activeTab === 'exhaustMap') {
+      <div class="operator-panel">
+        <div class="operator-info">
+          <div class="operator-badge exhaustmap">exhaustMap</div>
+          <h3>Ignores New While Busy</h3>
+          <p class="operator-desc">
+            <strong>Use case: Preventing double-click / double-submit.</strong>
+            <code>exhaustMap</code> ignores new source emissions while the current inner Observable is still running.
+            If you click "Refresh" while a refresh is already in-flight, the second click is silently dropped.
+          </p>
+          <div class="operator-diagram">
+            <pre>source$:      ──click──click──click───────────click──&gt;
+                  │       ✗       ✗               │
+exhaustMap:   fetch()──────────────done        fetch()──done
+                       (clicks ignored)</pre>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <div class="demo-control-row">
+            <button class="btn-demo" (click)="onRefreshClick()">
+              <span class="material-icons-outlined" [class.spin]="exhaustMapRefreshing">refresh</span>
+              Click Refresh (try rapid-clicking!)
+            </button>
+            <div class="exhaust-stats">
+              <span class="stat-pill">Clicks: {{ exhaustMapClickCount }}</span>
+              <span class="stat-pill success">Processed: {{ exhaustMapProcessedCount }}</span>
+              <span class="stat-pill warn">Ignored: {{ exhaustMapClickCount - exhaustMapProcessedCount }}</span>
+            </div>
+          </div>
+          <div class="demo-hint">
+            <span class="material-icons-outlined">lightbulb</span>
+            Rapid-click the button — only the first click triggers a refresh; the rest are ignored until it completes
+          </div>
+          <div class="log-container" #exhaustMapLogContainer>
+            @for (log of exhaustMapLogs; track $index) {
+              <div class="log-entry" [class]="'log-' + log.type">
+                <span class="log-time">{{ log.time }}</span>
+                <span class="log-message">{{ log.message }}</span>
+              </div>
+            }
+            @if (exhaustMapLogs.length === 0) {
+              <div class="log-empty">Click the refresh button above to see exhaustMap in action...</div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ─── User List Table ─────────────────────────────────────────────── -->
+  <div class="card user-table-card">
+    <div class="table-header">
+      <h2>
+        <span class="material-icons-outlined">people</span>
+        All Users
+      </h2>
+      <span class="user-count">{{ filteredUsers.length }} of {{ users.length }} users</span>
+    </div>
+
+    @if (isLoading) {
+      <div class="table-loading">
+        <span class="material-icons-outlined spin">progress_activity</span>
+        Loading users...
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; track user.id) {
+              <tr>
+                <td class="user-cell">
+                  <div class="user-avatar" [class]="getRoleClass(user.role)">{{ user.avatar }}</div>
+                  <span class="user-name">{{ user.name }}</span>
+                </td>
+                <td class="email-cell">{{ user.email }}</td>
+                <td><span class="role-badge" [class]="getRoleClass(user.role)">{{ user.role }}</span></td>
+                <td>{{ user.department }}</td>
+                <td><span class="status-badge" [class]="getStatusClass(user.status)">{{ user.status }}</span></td>
+                <td class="date-cell">{{ user.joinedDate }}</td>
+              </tr>
+            }
+            @if (filteredUsers.length === 0) {
+              <tr>
+                <td colspan="6" class="no-results">
+                  <span class="material-icons-outlined">search_off</span>
+                  No users found matching "{{ searchTerm }}"
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

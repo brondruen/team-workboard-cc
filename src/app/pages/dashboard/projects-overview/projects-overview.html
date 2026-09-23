@@ -1,0 +1,31 @@
+<div class="card overview-card">
+  <div class="card-header">
+    <h3>Projects Overview</h3>
+    <select class="period-select">
+      <option>This Month</option>
+      <option>Last Month</option>
+      <option>This Quarter</option>
+    </select>
+  </div>
+
+  <div class="overview-content">
+    <div class="donut-chart">
+      <div class="donut" [style.background]="conicGradient">
+        <div class="donut-center">
+          <span class="donut-value">{{ totalProjects }}</span>
+          <span class="donut-label">Total Projects</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      @for (status of statuses; track status.label) {
+        <div class="legend-item">
+          <span class="legend-dot" [style.background]="status.color"></span>
+          <span class="legend-label">{{ status.label }}</span>
+          <span class="legend-value">{{ status.count }} ({{ status.percentage }}%)</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

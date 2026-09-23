@@ -1,0 +1,44 @@
+<div class="dashboard">
+  <!-- Welcome Header -->
+  <div class="dashboard-header">
+    <div class="welcome">
+      <h1>Welcome back, John!</h1>
+      <p>Here's what's happening in your workspace today.</p>
+    </div>
+    <button class="btn-create">
+      <span class="material-icons-outlined">add</span>
+      Create New
+      <span class="material-icons-outlined arrow">expand_more</span>
+    </button>
+  </div>
+
+  <!-- Top Row: Stats + Activity -->
+  <div class="top-row">
+    <div class="stats-section">
+      <app-stats-cards />
+    </div>
+    <div class="activity-section">
+      <app-recent-activity />
+    </div>
+  </div>
+
+  <!-- Middle Row: Projects Overview + Tasks Overview -->
+  <div class="middle-row">
+    <div class="projects-overview-section">
+      <app-projects-overview />
+    </div>
+    <div class="tasks-overview-section">
+      <app-tasks-overview />
+    </div>
+  </div>
+
+  <!-- Bottom Row: Recent Projects + Upcoming Deadlines -->
+  <div class="bottom-row">
+    <div class="recent-projects-section">
+      <app-recent-projects />
+    </div>
+    <div class="deadlines-section">
+      <app-upcoming-deadlines />
+    </div>
+  </div>
+</div>
